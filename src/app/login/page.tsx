@@ -1,4 +1,6 @@
 "use client";
+import { MyInput } from "@components/ui/MyInput";
+import { Formiz, useForm } from "@formiz/core";
 import { Button, Divider, Input } from "antd";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -6,48 +8,53 @@ import { GrGithub, GrGoogle } from "react-icons/gr";
 
 const LoginPage = () => {
   const [isPasswordShow, setIsPasswordShow] = useState(false);
+  const form = useForm({ onSubmit: handleSubmit });
+
+  function handleSubmit(value: { email: string; password: string }) {
+    console.log(value);
+  }
+
   return (
     <section className="absolute h-screen w-full bg bg-black z-10 flex items-center justify-center">
-      <div className="h-3/4 w-1/3 bg-gray-500/20 border rounded-lg border-gray-400/30 gap-5 flex flex-col p-10">
+      <div className="h-fit w-[90%] sm:w-[70%] md:w-1/2 lg:w-2/5 xl:w-1/3 bg-gray-500/20 border rounded-lg border-gray-400/30 gap-5 flex flex-col p-10">
         <div className="flex items-center justify-center p-3">
           <h2 className="font-sans text-white font-bold text-2xl">Login</h2>
         </div>
         <Divider type="horizontal" className="text-white" />
+        <Formiz connect={form} autoForm>
         <div className="flex flex-col gap-5">
-          <Input
+          <MyInput
             placeholder="Email"
             type="text"
             size="large"
             name="email"
             required={true}
-            className="bg-gray-400/20 active:bg-gray-400/10 placeholder:text-white py-3 px-5 rounded-xl"
+             className="py-3 px-3 placeholder:text-gray-700"
           />
-          <Input
+          <MyInput
             placeholder="Password"
             type="password"
             size="large"
             name="password"
             required={true}
-            className="bg-gray-400/20 active:bg-gray-400/10 placeholder:text-white py-3 px-5 rounded-xl"
+             className="py-3 px-3 placeholder:text-gray-700"
           />
         </div>
-        <Button
-          type="primary"
-          className="h-12 bg-blue-500 font-bold rounded-xl"
-        >
+        <button type="submit"  className="h-12 bg-blue-500 active:bg-blue-700 hover:bg-blue-600 font-bold rounded-xl w-full mt-5 transition-all duration-300">
           Login
-        </Button>
+        </button>
+        </Formiz>
         {/* <Divider type="horizontal" /> */}
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-3">
           <button className="flex items-center bg-white hover:bg-white/80 active:bg-white/90 text-black gap-5 p-2 px-5 rounded-full transition-all duration-300">
-            <GrGoogle size={25} />
+            <GrGoogle size={20} />
             <div className="flex flex-col items-start ">
               <h2 className="font-bold text-md">Continue with google</h2>
               <p className="text-gray-800 text-sm">google@gmail.com</p>
             </div>
           </button>
           <button className="flex items-center bg-white hover:bg-white/80 active:bg-white/90 text-black gap-5 p-2 px-5 rounded-full transition-all duration-300">
-            <GrGithub size={25} />
+            <GrGithub size={20} />
             <div className="flex flex-col items-start ">
               <h2 className="font-bold text-md">Continue with github</h2>
               <p className="text-gray-800 text-sm">github@gmail.com</p>
