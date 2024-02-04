@@ -11,13 +11,15 @@ import {
   HomeFilled,
   SearchOutlined,
 } from "@ant-design/icons";
-import { Avatar, MenuProps, Flex, Layout, Menu, Button, Input } from "antd";
+import { Avatar, MenuProps, Flex, Layout, Menu, Button, Input, Dropdown } from "antd";
 import { CardItem, FollowItem } from "@components/ui/Items";
 import {
   usePathname,
   useRouter,
   useSelectedLayoutSegment,
 } from "next/navigation";
+import Link from "next/link";
+import { TbTrash } from "react-icons/tb";
 
 export function SideBar1() {
   const [isActive, setIsActive] = React.useState<string[]>(["1"]);
@@ -26,7 +28,7 @@ export function SideBar1() {
   const segment = useSelectedLayoutSegment();
   const menuRef = useRef(null);
 
-  const items = [
+  const links = [
     {
       icon: <HomeFilled className="!text-xl" />,
       label: "Home",
@@ -74,7 +76,7 @@ export function SideBar1() {
       icon: <UserOutlined className="!text-xl" />,
       label: "Profile",
       title: "profile",
-      link: "/profile",
+      link: "/profile/fsdfsdfsdf",
     },
 
     {
@@ -85,35 +87,46 @@ export function SideBar1() {
     },
   ];
 
-  const menuItems: MenuProps["items"] = items.map((item, index) => ({
-    key: String(index + 1),
-    icon: item.icon,
-    label: item.label,
-    className:
-      "!py-2 !min-h-14 h-10 !max-h-14 !items-center select-none !justify-center !px-5 !rounded-lg hover:bg-blue-700  hover:text-white bg-black",
-    title: item.title,
-  }));
-
-  React.useEffect(() => {
-    const index = items.findIndex((item) => item.title === segment);
-    if (index !== -1) {
-      setIsActive([String(index + 1)]);
-    }
-  }, [segment]);
+  
+  const items: MenuProps["items"] = [
+    {
+      key: "1",
+      label: (
+        <Button
+        type="text"
+        className="text-red-400 items-center w-44 text-md  font-bold flex gap-2"
+        onClick={()=>{
+          alert('hello')
+        }}
+        >
+         <TbTrash/>
+         <p>Delete</p>
+        </Button>
+      ),
+      className:"text-green-500"
+    },
+  ];
 
   return (
     <div className="hidden w-72 flex-1 fixed md:flex flex-col h-screen justify-between p-3 border-r-[1px] border-gray-600 ">
-      <Menu
-        ref={menuRef}
-        theme="dark"
-        mode="vertical"
-        defaultValue={["1"]}
-        onClick={({ key }) => {
-          router.push(`/${items[parseInt(key) - 1].title}`);
-        }}
-        items={menuItems}
-        rootClassName="flex flex-col gap-1 text-xl font-bold bg-black overflow-scroll "
-      />
+      <nav className="flex flex-col gap-2 text-xl font-bold bg-black overflow-scroll">
+        {links.map((item, index) => {
+          return (
+            <Link href={item.link} key={index}>
+              <div
+                className={`flex gap-3 drop-shadow-md ${
+                  segment === item.title
+                    ? "bg-blue-700"
+                    : "bg-gray-500/10 text-white/50"
+                } !py-2 !min-h-14 h-10 !max-h-14 items-center select-none !px-5 !rounded-xl hover:bg-blue-700  hover:text-white bg-black transition-all duration-200`}
+              >
+                {item.icon}
+                <p>{item.label}</p>
+              </div>
+            </Link>
+          );
+        })}
+      </nav>
       <div className="flex p-2 gap-4 items-center justify-between hover:bg-white/10 active:bg-white/20 rounded-lg cursor-pointer transition-all duration-300 border-2 border-gray-500/40">
         <div className="flex gap-2 ">
           <Avatar size={50} icon={<UserOutlined />} />
@@ -122,11 +135,15 @@ export function SideBar1() {
             <h2 className="text-gray-500 font-normal select-none">@Vedant</h2>
           </Flex>
         </div>
-        <Button
-          className="hover:bg-white/20 transition-all duration-300 rounded-full z-10"
-          icon={<MoreOutlined className="!text-2xl text-white " />}
-          type="text"
-        />
+        <div className="more z-10">
+          <Dropdown menu={{ items }} placement="bottomRight" className="">
+            <Button
+              className="hover:bg-white/20 transition-all duration-300 rounded-full z-10"
+              icon={<MoreOutlined className="!text-2xl text-white " />}
+              type="text"
+            />
+          </Dropdown>
+        </div>
       </div>
     </div>
   );

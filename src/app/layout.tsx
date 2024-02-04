@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en" className={inter.className}>
       <body className={""}>
         <Providers>
-          <div className="flex max-w-screen-2xl justify-between mx-auto  relative">
+          <div className="z-10 flex max-w-screen-2xl justify-between mx-auto relative">
             <SideBar1 />
             {children}
             <SideBar2 />
