@@ -4,6 +4,7 @@ import "@styles/globals.css";
 import Providers from "@providers/index";
 import { SideBar1, SideBar2 } from "@components/LayoutComponents/SideBar";
 import { useSelectedLayoutSegment } from "next/navigation";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({ subsets: ["vietnamese"] });
 
@@ -25,6 +26,7 @@ export default function RootLayout({
             <SideBar1 />
             {children}
             <SideBar2 />
+            <SpeedInsights/>
           </div>
         </Providers>
       </body>
