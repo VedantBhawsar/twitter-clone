@@ -10,17 +10,6 @@ export const CardItem: React.FC = () => {
         <h1 className="text-md text-white font-bold">Card content</h1>
         <p className="text-xs text-gray-400">1,095 posts</p>
       </div>
-      <div
-        className={
-          "hover:text-blue-900  text-white p-1 hover:bg-blue-400/10 rounded-full transition-all duration-300 "
-        }
-      >
-        <Button
-          className={"p-0"}
-          type="link"
-          icon={<MoreOutlined className="text-xl font-bold text-white" />}
-        />
-      </div>
     </div>
   );
 };

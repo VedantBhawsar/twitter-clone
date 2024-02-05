@@ -20,13 +20,11 @@ import {
 } from "next/navigation";
 import Link from "next/link";
 import { TbTrash } from "react-icons/tb";
+import { ImageModal } from "@components/Modals/imageModal";
 
 export function SideBar1() {
   const [isActive, setIsActive] = React.useState<string[]>(["1"]);
-  const pathName = usePathname();
-  const router = useRouter();
   const segment = useSelectedLayoutSegment();
-  const menuRef = useRef(null);
 
   const links = [
     {
@@ -92,16 +90,15 @@ export function SideBar1() {
     {
       key: "1",
       label: (
-        <Button
-        type="text"
-        className="text-red-400 items-center w-44 text-md  font-bold flex gap-2"
+        <div
+        className="text-red-400 py-1 px-2 items-center w-44 text-md  font-bold flex gap-2"
         onClick={()=>{
           alert('hello')
         }}
         >
          <TbTrash/>
-         <p>Delete</p>
-        </Button>
+         <p>Logout</p>
+        </div>
       ),
       className:"text-green-500"
     },
@@ -116,9 +113,9 @@ export function SideBar1() {
               <div
                 className={`flex gap-3 drop-shadow-md ${
                   segment === item.title
-                    ? "bg-blue-700"
-                    : "bg-gray-500/10 text-white/50"
-                } !py-2 !min-h-14 h-10 !max-h-14 items-center select-none !px-5 !rounded-xl hover:bg-blue-700  hover:text-white bg-black transition-all duration-200`}
+                    ? "bg-blue-600"
+                    : "text-white/50 hover:bg-gray-400/10"
+                } !py-2 !min-h-14 h-10 !max-h-14 items-center select-none !px-5 !rounded-full  active:bg-blue-700 active:scale-95  hover:text-white bg-black transition-all duration-200`}
               >
                 {item.icon}
                 <p>{item.label}</p>
@@ -136,7 +133,7 @@ export function SideBar1() {
           </Flex>
         </div>
         <div className="more z-10">
-          <Dropdown menu={{ items }} placement="bottomRight" className="">
+          <Dropdown menu={{ items }} placement="bottomRight" className="" overlayClassName="!min-w-60">
             <Button
               className="hover:bg-white/20 transition-all duration-300 rounded-full z-10"
               icon={<MoreOutlined className="!text-2xl text-white " />}
