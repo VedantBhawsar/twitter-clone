@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 import { MoreOutlined } from "@ant-design/icons";
 import { Button } from "antd";
