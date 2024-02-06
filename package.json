@@ -8,7 +8,6 @@
     "start": "next start",
     "lint": "next lint"
   },
-  "exclude": "backend",
   "dependencies": {
     "@formiz/core": "^2.2.2",
     "@formiz/validations": "^2.0.1",
