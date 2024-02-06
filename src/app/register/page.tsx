@@ -1,20 +1,19 @@
 "use client";
 import { MyInput } from "@components/ui/MyInput";
 import { Formiz, useForm } from "@formiz/core";
-import { isEmail } from "@formiz/validations";
+import { isEmail, isNotEmptyString } from "@formiz/validations";
 import { Button, Divider, Input } from "antd";
 import Link from "next/link";
 import React, { useState } from "react";
 import { GrGithub, GrGoogle } from "react-icons/gr";
 
-interface UserType{
+interface UserType {
   name: string;
   dob: Date;
   email: string;
   password: string;
   surname: string;
 }
-
 
 const RegisterPage = () => {
   function handleSubmit(value: UserType) {
@@ -46,8 +45,8 @@ const RegisterPage = () => {
                 className="py-3 px-3 placeholder:text-gray-700"
                 validations={[
                   {
-                    handler: isEmail(),
-                    message: "Email is invalid",
+                    handler: isNotEmptyString(),
+                    message: "Name can't be empty",
                   },
                 ]}
               />
@@ -60,12 +59,27 @@ const RegisterPage = () => {
               />
             </div>
 
+             <MyInput
+              placeholder="Username"
+              type="text"
+              name="username"
+              required={true}
+              className="py-3 px-5 placeholder:text-gray-700"
+            
+            />
+
             <MyInput
               placeholder="Email"
               type="text"
               name="email"
               required={true}
               className="py-3 px-5 placeholder:text-gray-700"
+              validations={[
+                {
+                  handler: isEmail(),
+                  message: "Email is invalid",
+                },
+              ]}
             />
 
             <MyInput

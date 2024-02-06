@@ -1,6 +1,7 @@
 "use client";
 import { MyInput } from "@components/ui/MyInput";
 import { Formiz, useForm } from "@formiz/core";
+import { isEmail } from "@formiz/validations";
 import { Button, Divider, Input } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -13,7 +14,6 @@ const LoginPage = () => {
   const router = useRouter();
   function handleSubmit(value: { email: string; password: string }) {
     console.log(value);
-    router.push("/home");
   }
 
   return (
@@ -37,6 +37,12 @@ const LoginPage = () => {
               name="email"
               required={true}
               className="py-3 px-3 placeholder:text-gray-700"
+              validations={[
+                {
+                  handler: isEmail(),
+                  message: "Email is invalid",
+                },
+              ]}
             />
             <MyInput
               placeholder="Password"
