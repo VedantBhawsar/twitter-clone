@@ -4,5 +4,5 @@ dotenv.config();
 
 const port = process.env.PORT || 5001;
 const dburl = process.env.DB_URL || "";
-
-export { port, dburl };
+const jwtsecret = process.env.JWT_SECRET || "admin";
+export { port, dburl, jwtsecret };

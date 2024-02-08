@@ -1,22 +1,103 @@
-import mongoose from "mongoose";
-import { unique } from "next/dist/build/utils";
+import { timeStamp } from "console";
+import mongoose, { ObjectId } from "mongoose";
+import { ITweet } from "./tweet";
 
-const UserSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    require: true,
-    min: [3, "The Length of the name must be greater than 3"],
-  },
-  surname: {
-    type: String,
-    require: false,
-    min: [3, "The Length of the surname must be greater than 3"],
-  },
-  username: {
-    type: String,
-    require: false,
-    unique: true,
-  },
-});
+interface IImages {
+  profileImage?: string | null;
+  coverImage?: string | null;
+}
 
-export const User = mongoose.model("User", UserSchema);
+interface IUser {
+  name: string;
+  surname?: string | null;
+  email: string;
+  password: string;
+  dob?: Date | null;
+  username: string;
+  images?: IImages | null;
+  tweets?: ITweet[] | null;
+  followers?: any | null;
+  followings?: any | null;
+}
+
+const User = mongoose.model(
+  "User",
+  new mongoose.Schema({
+    name: {
+      type: String,
+      required: true,
+      min: [3, "The Length of the name must be greater than 3"],
+    },
+    surname: {
+      type: String,
+      required: false,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      min: [6, "The Length of the password must be greater than 6"],
+    },
+    images: {
+      profileImage: {
+        type: String,
+        required: false,
+      },
+      coverImage: {
+        type: String,
+        required: false,
+      },
+    },
+    dob: {
+      type: Date,
+      required: false,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    followings: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+  })
+);
+
+export const getUserById = async (id: string) => await User.findById(id);
+
+export const getUserbyUsername = async (userUsername: string) =>
+  await User.findOne({ username: userUsername });
+
+export const getUserbyEmail = async (email: string) =>
+  await User.findOne({ email: email });
+
+export const createUser = async (user: IUser): Promise<IUser> =>
+  await new User(user).save();
+
+export const updateUserById = async (updateUser: any, id: ObjectId) =>
+  await User.findByIdAndUpdate(id, {
+    ...updateUser,
+  });
+
+export const getAllUsers = async () =>
+  await User.find({}).sort({ createdAt: -1 });
+
+export const deleteUserById = async (id: string) =>
+  await User.findByIdAndDelete(id);
