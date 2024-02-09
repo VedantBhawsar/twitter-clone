@@ -14,10 +14,13 @@ const Like = mongoose.model(
   })
 );
 
+export const getLikeByTweetId = async (tweetId: string) =>
+  await Like.find({ tweet_id: tweetId });
+
 export const giveLike = async (like: ILike) =>
   await new Like({
     ...like,
   }).save();
 
-export const removeLike = async (id: string) =>
+export const removeLikeById = async (id: string) =>
   await Like.findByIdAndDelete(id);

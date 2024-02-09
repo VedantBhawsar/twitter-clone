@@ -2,10 +2,13 @@ import { Application, Request, Response } from "express";
 import {
   createUser,
   deleteUserById,
+  followUser,
+  followingUser,
   getAllUsers,
   getUserById,
   getUserbyEmail,
   getUserbyUsername,
+  unfollowUser,
   updateUserById,
 } from "../modals/user";
 import bcrypt from "bcrypt";
@@ -15,7 +18,7 @@ import { jwtsecret } from "../config";
 class UserController {
   public getUsers = async (request: any, response: Response) => {
     try {
-      const token1 = request.cookies['user']
+      const token1 = request.cookies;
       console.log(token1);
       const user = await getAllUsers();
       response.status(200).json(user);
@@ -60,14 +63,15 @@ class UserController {
 
   public updateUser = async (request: Request, response: Response) => {
     try {
-      const { id, user } = request.body;
-      const existUser = await getUserById(id);
+      const existUser = await getUserById(request.params.id);
       if (!existUser) {
         response.status(404).json({
           message: "user not found",
         });
+        return;
       }
-      const updatedUser = await updateUserById(user, id);
+
+      const updatedUser = await updateUserById(request.body, request.params.id);
       response.status(200).json(updatedUser);
     } catch (error: any) {
       console.log(`[user]: ${error.message}`);
@@ -154,6 +158,50 @@ class UserController {
       response.status(500).json({ error: error.message });
     }
   };
+
+  public followUser = async (request: Request, response: Response) => {
+    try {
+      const { id } = request.params;
+      const { userId } = request.body;
+      await followUser(id, userId);
+      response.status(200).json({
+        success: true,
+      });
+    } catch (error: any) {
+      console.log(`[user]: ${error.message}`);
+      response.status(500).json({ error: error.message });
+    }
+  };
+
+  public followingUser = async (request: Request, response: Response) => {
+    try {
+      const { id } = request.params;
+      const { userId } = request.body;
+      await followingUser(id, userId);
+      response.status(200).json({
+        success: true,
+      });
+    } catch (error: any) {
+      console.log(`[user]: ${error.message}`);
+      response.status(500).json({ error: error.message });
+    }
+  };
+
+  public unfollowUser = async (request: Request, response: Response) => {
+    try {
+      const { id } = request.params;
+      const { userId } = request.body;
+      await unfollowUser(id, userId)
+      response.status(200).json({
+        success: true,
+      });
+    } catch (error:any) {
+      console.log(`[user]: ${error.message}`);
+      response.status(500).json({
+        error: error.message,
+      })
+    }
+  }
 }
 
 export default new UserController();

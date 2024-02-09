@@ -91,7 +91,7 @@ export const getUserbyEmail = async (email: string) =>
 export const createUser = async (user: IUser): Promise<IUser> =>
   await new User(user).save();
 
-export const updateUserById = async (updateUser: any, id: ObjectId) =>
+export const updateUserById = async (updateUser: any, id: string) =>
   await User.findByIdAndUpdate(id, {
     ...updateUser,
   });
@@ -101,3 +101,23 @@ export const getAllUsers = async () =>
 
 export const deleteUserById = async (id: string) =>
   await User.findByIdAndDelete(id);
+
+export const followUser = async (id: string, userId: string) =>
+  await User.findByIdAndUpdate(id, {
+    $addToSet: {
+      followings: userId,
+    },
+  });
+
+export const followingUser = async (id: string, userId: string) =>
+  await User.findByIdAndUpdate(id, {
+    $addToSet: {
+      followers: userId,
+    },
+  });
+
+export const unfollowUser = async (id: string, userId: string) => await User.findByIdAndUpdate(id, {
+  $pull: {
+    followings: userId,
+  },
+})

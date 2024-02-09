@@ -6,7 +6,6 @@ export interface ITweet {
   message: string;
   images?: string[] | null;
   comments?: IComments | null;
-  createdAt: Date;
 }
 
 const Tweet = mongoose.model(
@@ -40,8 +39,15 @@ const Tweet = mongoose.model(
   })
 );
 
-export const getTweet = async (id: string) =>
-  await Tweet.find({ author_id: id });
+export const getAllTweet = async () => await Tweet.find({});
+export const getTweetById = async (id: string) => await Tweet.findById(id);
+export const deleteTweetById = async (id: string) =>
+  await Tweet.findByIdAndDelete(id);
+
+export const updateTweetById = async (id: string, tweet: ITweet) =>
+  await Tweet.findByIdAndUpdate(id, {
+    ...tweet,
+  });
 
 export const createTweet = async (tweetData: ITweet) =>
   await new Tweet(tweetData).save();

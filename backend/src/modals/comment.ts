@@ -30,5 +30,5 @@ export const createComment = async (comment: IComments) =>
 export const updateComment = async (id: string, comment: IComments) =>
   await Comments.findByIdAndUpdate(id, { ...comment });
 
-export const deleteComment = async (id: string) =>
+export const deleteCommentById = async (id: string) =>
   await Comments.findByIdAndDelete(id);

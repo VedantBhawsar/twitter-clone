@@ -1,9 +1,12 @@
 import { port } from "./config";
-import {app} from "./app";
+import { app } from "./app";
 import { userRoutes } from "./routes/userRoutes";
-
+import { tweetRoutes } from "./routes/tweetRoutes";
+import { likesRoutes } from "./routes/LikeRoutes";
 
 app.use("/users", userRoutes);
+app.use("/tweets", tweetRoutes);
+app.use("/likes", likesRoutes);
 
 app.get("/", (req: Request, res: any) => {
   res.status(200).json("Server is running successfully!");
