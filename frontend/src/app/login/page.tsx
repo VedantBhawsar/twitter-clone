@@ -1,20 +1,21 @@
 "use client";
 import { MyInput } from "@components/ui/MyInput";
 import { Formiz, useForm } from "@formiz/core";
-import { isEmail } from "@formiz/validations";
+import { isEmail, isNotEmptyString } from "@formiz/validations";
+import { useAuth } from "@hooks/useAuth";
+import { useMutation } from "@tanstack/react-query";
 import { Button, Divider, Input } from "antd";
+import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import { GrGithub, GrGoogle } from "react-icons/gr";
+import { MoonLoader } from "react-spinners";
 
 const LoginPage = () => {
-  const [isPasswordShow, setIsPasswordShow] = useState(false);
-  const form = useForm({ onSubmit: handleSubmit });
-  const router = useRouter();
-  function handleSubmit(value: { email: string; password: string }) {
-    console.log(value);
-  }
+  const { handleLogin } = useAuth();
+  const form = useForm({ onSubmit: handleLogin });
 
   return (
     <section className="absolute h-screen w-full bg-black z-10 flex items-center justify-center">
@@ -35,12 +36,15 @@ const LoginPage = () => {
               type="text"
               size="large"
               name="email"
-              required={true}
               className="py-3 px-3 placeholder:text-gray-700"
               validations={[
                 {
                   handler: isEmail(),
                   message: "Email is invalid",
+                },
+                {
+                  handler: isNotEmptyString(),
+                  message: "Email can't be empty",
                 },
               ]}
             />
@@ -49,17 +53,35 @@ const LoginPage = () => {
               type="password"
               size="large"
               name="password"
-              required={true}
               className="py-3 px-3 placeholder:text-gray-700"
+              validations={[
+                {
+                  handler: (value: string) => value.length >= 8,
+                  message: "Password must be greater than 8",
+                },
+              ]}
             />
           </div>
 
-          <button
-            type="submit"
-            className="h-12 bg-blue-500 active:bg-blue-700 hover:bg-blue-600 font-bold rounded-xl w-full mt-5 transition-all duration-300"
-          >
-            Login
-          </button>
+          {false ? (
+            <div
+              className={`h-12 flex items-center justify-center bg-blue-700 cursor-not-allowed  font-bold rounded-xl w-full mt-5 transition-all duration-300`}
+            >
+              <MoonLoader size={25} color="#fff" />
+            </div>
+          ) : (
+            <button
+              disabled={!form.isValid}
+              type="submit"
+              className={`h-12 bg-blue-500 font-bold rounded-xl w-full mt-5 transition-all duration-300 ${
+                form.isValid
+                  ? "active:bg-blue-700 hover:bg-blue-600"
+                  : "cursor-not-allowed"
+              }`}
+            >
+              Login
+            </button>
+          )}
         </Formiz>
         <Divider
           style={{

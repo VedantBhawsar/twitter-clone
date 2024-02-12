@@ -12,19 +12,31 @@ import {
   updateUserById,
 } from "../modals/user";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { jwtsecret } from "../config";
 
 class UserController {
   public getUsers = async (request: any, response: Response) => {
     try {
-      const token1 = request.cookies;
-      console.log(token1);
       const user = await getAllUsers();
       response.status(200).json(user);
     } catch (error: any) {
       console.log(`[user]: ${error.message}`);
       response.status(500).json({ error: error.message });
+    }
+  };
+
+  public validateToken = async (request: any, response: Response) => {
+    try {
+      const token = request.cookies.user;
+      const decoded: any = jwt.verify(token, jwtsecret);
+      const user = await getUserById(decoded?.user_id ?? "");
+      response.status(200).json(user);
+    } catch (error: any) {
+      console.log(`[user]: ${error.message}`);
+      response
+        .status(500)
+        .json({ message: "Token is expired", error: error.message });
     }
   };
 
@@ -35,7 +47,9 @@ class UserController {
       response.status(200).json(user);
     } catch (error: any) {
       console.log(`[user]: ${error.message}`);
-      response.status(500).json({ error: error.message });
+      response
+        .status(500)
+        .json({ message: "User not found", error: error.message });
     }
   };
 
@@ -191,17 +205,17 @@ class UserController {
     try {
       const { id } = request.params;
       const { userId } = request.body;
-      await unfollowUser(id, userId)
+      await unfollowUser(id, userId);
       response.status(200).json({
         success: true,
       });
-    } catch (error:any) {
+    } catch (error: any) {
       console.log(`[user]: ${error.message}`);
       response.status(500).json({
         error: error.message,
-      })
+      });
     }
-  }
+  };
 }
 
 export default new UserController();

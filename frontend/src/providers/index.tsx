@@ -1,5 +1,7 @@
+'use client'
 import React from "react";
 import NextTopLoader from "nextjs-toploader";
+import { QueryProvider } from "./queryProvider";
 function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
@@ -18,7 +20,7 @@ function Providers({ children }: { children: React.ReactNode }) {
         zIndex={1600}
         showAtBottom={false}
       />
-      {children}
+      <QueryProvider>{children}</QueryProvider>
     </>
   );
 }

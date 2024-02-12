@@ -5,6 +5,7 @@ import Providers from "@providers/index";
 import { SideBar1, SideBar2 } from "@components/LayoutComponents/SideBar";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["vietnamese"] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({
     <html lang="en" className={inter.className}>
       <body className={""}>
         <Providers>
+          <Toaster/>
           <div className="z-10 flex max-w-screen-2xl justify-between mx-auto relative">
             <SideBar1 />
             {children}
