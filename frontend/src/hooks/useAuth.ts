@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -8,33 +9,59 @@ export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState<{
+    _id: string;
+    name: string;
+    surname: string;
+    email: string;
+    username: string;
+    password: string;
+    followers: string[];
+    followings: string[];
+    createdAt: string;
+  }>();
+
+  const [user, setUser] = useState<{
+    _id: string;
+    name: string;
+    surname: string;
+    email: string;
+    username: string;
+    password: string;
+    followers: string[];
+    followings: string[];
+    createdAt: string;
+  }>();
 
   function parseCookies() {
-    const cookies = document?.cookie
-      ?.split(";")
-      ?.map((cookie) => cookie?.trim());
-    const user = cookies ? JSON.parse(cookies[0]) : null;
-    return (
-      {
-        id: user?.id,
-        token: user?.token,
-      } ?? undefined
-    );
+    try {
+      const cookies = document?.cookie
+        ?.split(";")
+        ?.map((cookie) => cookie?.trim());
+      if (!cookies) {
+        return null;
+      } else {
+        const user = cookies.map((cookie) => cookie.split("=")[1]);
+        return { id: user[0], token: user[1] };
+      }
+    } catch (error: any) {
+      console.log(error.message);
+      return;
+    }
   }
 
   async function validateToken() {
-    const { token } = parseCookies();
     try {
       const { data } = await axios.get("/api/user/validatetoken", {
         withCredentials: true,
       });
       setIsAuthenticated(true);
-      setUser(data);
+      setCurrentUser(data);
       console.log("User is authenticated");
-      return { ...data } ?? undefined
+      return { ...data } ?? undefined;
     } catch (error: any) {
-      document.cookie = "id=; token=;";
+      document.cookie = "";
+      router.push("/login");
       toast.error(error.response.data.message, {
         position: "bottom-center",
         style: {
@@ -48,10 +75,30 @@ export function useAuth() {
     }
   }
 
-  async function getCurrentUser() {
-    const { id } = parseCookies();
+  async function validateUsername(username: string) {
     try {
-      const { data } = await axios.get("/api/user/" + id + "ds");
+      const { data } = await axios.get(`/api/user/validusername/${username}`);
+      return data.available;
+    } catch (error: any) {
+      console.log(error.response.data.message);
+      return null;
+    }
+  }
+
+  async function validateEmail(email: string) {
+    try {
+      const { data } = await axios.get(`/api/user/validemail/${email}`);
+      return data.available;
+    } catch (error: any) {
+      console.log(error.response.data.message);
+      return null;
+    }
+  }
+
+  async function fetchUser(id: string) {
+    try {
+      const { data } = await axios.get("/api/user/" + id);
+      setUser(data);
       return { ...data };
     } catch (error: any) {
       toast.error(error.response.data.message, {
@@ -66,13 +113,27 @@ export function useAuth() {
     }
   }
 
+  async function getCurrentUser() {
+    const cookies = parseCookies();
+    try {
+      const { data } = await axios.get("/api/user/" + cookies?.id);
+      setCurrentUser(data);
+      console.log("User is authenticated");
+      return { ...data } ?? undefined;
+    } catch (error: any) {
+      console.log(error);
+      return undefined;
+    }
+  }
+
   async function handleLogin(value: { email: string; password: string }) {
+    setIsLoading((prev) => true);
     try {
       const { data } = await axios.post("/api/user/login", value);
-      document.cookie = JSON.stringify({
-        id: data.user._id,
-        token: data.jwt,
-      });
+      setCurrentUser(data.user);
+      document.cookie = `id=${data.user._id};`;
+      document.cookie = `access_token=${data.jwt};`;
+
       toast.success(data.message, {
         position: "bottom-center",
         style: {
@@ -82,7 +143,36 @@ export function useAuth() {
           color: "#fff",
         },
       });
-      router.push("/home");
+      router.push("/");
+    } catch (error: any) {
+      toast.error(error.response.data.message, {
+        position: "bottom-center",
+        style: {
+          borderRadius: "20px",
+          background: "#444",
+          opacity: 0.1,
+          color: "#fff",
+        },
+      });
+    } finally {
+      setIsLoading((prev) => false);
+    }
+  }
+
+  async function handleRegister(value: {
+    name: string;
+    surname: string;
+    username: string;
+    email: string;
+    dob: string;
+    password: string;
+  }) {
+    try {
+      const { data } = await axios.post("/api/user/register", value);
+      document.cookie = `id=${data.user._id};`;
+      document.cookie = `access_token=${data.jwt};`;
+      setCurrentUser(data.user);
+      router.push("/login");
     } catch (error: any) {
       toast.error(error.response.data.message, {
         position: "bottom-center",
@@ -100,10 +190,15 @@ export function useAuth() {
     isLoading,
     error,
     isAuthenticated,
-    user,
-    getCurrentUser,
+    currentUser,
+    fetchUser,
+    validateUsername,
     parseCookies,
+    user,
     handleLogin,
     validateToken,
+    handleRegister,
+    validateEmail,
+    getCurrentUser,
   };
 }

@@ -6,7 +6,7 @@ export function verifyToken(
   response: Response,
   next: NextFunction
 ) {
-  const token = request.cookies.user
+  const token = request.cookies.token
   if (!token) return response.status(401).json({ error: "Access denied" });
   try {
     const decoded: any = jwt.verify(token, jwtsecret);

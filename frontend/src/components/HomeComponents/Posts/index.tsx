@@ -21,7 +21,7 @@ import { ImageModal } from "@components/Modals/imageModal";
 import { BiUserPlus } from "react-icons/bi";
 import { HiDocumentPlus } from "react-icons/hi2";
 
-export const Post = () => {
+export const Post = ({ user }: any) => {
   const router = useRouter();
   const url =
     "https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg";
@@ -107,30 +107,38 @@ export const Post = () => {
   return (
     <div className="flex w-full items-start gap-8 md:gap-5 p-5 border-b-[1px] border-gray-600">
       <div className="avtar hidden md:flex">
-        <Avatar
-          src={url}
-          size={50}
-          className="hover:bg-gray-500/30 p-2 transition-all duration-300 cursor-pointer active:bg-gray-500/50 object-cover"
-        />
+        <Link href={`/profile/${user?._id}`}>
+          <Image
+            src={user?.images?.profileImage}
+            width={70}
+            height={70}
+            alt="profile pic"
+            className="hover:bg-gray-500/30 p-2 transition-all duration-300 cursor-pointer active:bg-gray-500/50 object-cover rounded-full"
+          />
+        </Link>
       </div>
       <div className="content flex flex-col w-full gap-5">
         <div className="flex gap-3">
           <div className="flex flex-col gap-2 items-start cursor-pointer">
             <div className="flex gap-2 items-center">
               <div className="avtar flex md:hidden ">
-                <Avatar
-                  src={url}
-                  size={40}
-                  className="hover:bg-gray-500/30 p-2 transition-all duration-300 cursor-pointer active:bg-gray-500/50 object-cover"
+                <Image
+                  src={user?.images?.profileImage}
+                  width={40}
+                  height={40}
+                  alt="profile pic"
+                  className="hover:bg-gray-500/30 p-0 transition-all duration-75 cursor-pointer active:bg-gray-500/50 object-cover"
                 />
               </div>
               <Link
-                href={"/profile/kldf"}
+                href={`/profile/${user?._id}`}
                 className="text-xl hover:underline underline-offset-2"
               >
-                vedant bhavsar
+                {user?.name}
               </Link>
-              <h2 className="text-md md:text-xl text-gray-400/50">@Vedant</h2>
+              <h2 className="text-md md:text-xl text-gray-400/50">
+                @{user?.username}
+              </h2>
               <div className="text-md md:text-xl text-gray-400/50">6h</div>
             </div>
             <p className="text-md">
@@ -140,7 +148,7 @@ export const Post = () => {
               Learning, Computer Vision, NLP, PyTorch We have 6 months Project
               Work
             </p>
-            <Link href={"/post/id"}>
+            <Link href={"/post/{id}"}>
               <Button
                 type="link"
                 className="p-0"
@@ -207,7 +215,14 @@ export const Post = () => {
           </div>
 
           <div className="more">
-            <Dropdown menu={{ items }} placement="bottomRight" trigger={['click']} className="" rootClassName="min-w-96" overlayClassName={"!min-w-64 !bg-black"} >
+            <Dropdown
+              menu={{ items }}
+              placement="bottomRight"
+              trigger={["click"]}
+              className=""
+              rootClassName="min-w-96"
+              overlayClassName={"!min-w-64 !bg-black"}
+            >
               <Button
                 type="default"
                 size="large"

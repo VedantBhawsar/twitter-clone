@@ -2,10 +2,12 @@
 import { MyInput } from "@components/ui/MyInput";
 import { Formiz, useForm } from "@formiz/core";
 import { isEmail, isNotEmptyString } from "@formiz/validations";
+import { useAuth } from "@hooks/useAuth";
 import { Button, Divider, Input } from "antd";
 import Link from "next/link";
 import React, { useState } from "react";
 import { GrGithub, GrGoogle } from "react-icons/gr";
+import { MoonLoader } from "react-spinners";
 
 interface UserType {
   name: string;
@@ -16,11 +18,10 @@ interface UserType {
 }
 
 const RegisterPage = () => {
-  function handleSubmit(value: UserType) {
-    console.log(value);
-  }
-  const form = useForm({ onSubmit: handleSubmit });
-  const [isPasswordShow, setIsPasswordShow] = useState(false);
+  const { handleRegister, isLoading, validateUsername, validateEmail } =
+    useAuth();
+
+  const form = useForm({ onSubmit: handleRegister });
 
   return (
     <section className="absolute h-screen w-full bg bg-black z-10 flex items-center justify-center">
@@ -36,7 +37,7 @@ const RegisterPage = () => {
         />
         <Formiz connect={form} autoForm>
           <div className="flex flex-col gap-3">
-            <div className="flex gap-5">
+            <div className="flex gap-3">
               <MyInput
                 placeholder="First Name"
                 type="text"
@@ -59,13 +60,21 @@ const RegisterPage = () => {
               />
             </div>
 
-             <MyInput
+            <MyInput
               placeholder="Username"
               type="text"
               name="username"
               required={true}
+              validationsAsync={[
+                {
+                  handler: async (value: any) => {
+                    const isAlreadyUsed = await validateUsername(value);
+                    return isAlreadyUsed;
+                  },
+                  message: "Username already used, please select another one.",
+                },
+              ]}
               className="py-3 px-5 placeholder:text-gray-700"
-            
             />
 
             <MyInput
@@ -74,6 +83,15 @@ const RegisterPage = () => {
               name="email"
               required={true}
               className="py-3 px-5 placeholder:text-gray-700"
+              validationsAsync={[
+                {
+                  handler: async (value: any) => {
+                    const isAlreadyUsed = await validateEmail(value);
+                    return isAlreadyUsed;
+                  },
+                  message: "Email already exist, please login.",
+                },
+              ]}
               validations={[
                 {
                   handler: isEmail(),
@@ -88,6 +106,12 @@ const RegisterPage = () => {
               name="password"
               required={true}
               className="py-3 px-5 placeholder:text-gray-700"
+              validations={[
+                {
+                  handler: (value: string) => value.length >= 8,
+                  message: "Password must be greater than 8",
+                },
+              ]}
             />
 
             <MyInput
@@ -98,12 +122,25 @@ const RegisterPage = () => {
               className="py-3 px-5 placeholder:text-gray-700"
             />
           </div>
-          <button
-            type="submit"
-            className="h-12 bg-blue-500 active:bg-blue-700 hover:bg-blue-600 font-bold rounded-xl w-full mt-5 transition-all duration-300"
-          >
-            Signup
-          </button>
+          {isLoading ? (
+            <div
+              className={`h-12 flex items-center justify-center bg-blue-700 cursor-not-allowed  font-bold rounded-xl w-full mt-5 transition-all duration-300`}
+            >
+              <MoonLoader size={25} color="#fff" />
+            </div>
+          ) : (
+            <button
+              disabled={!form.isValid ?? isLoading}
+              type="submit"
+              className={`h-12 bg-blue-500 font-bold rounded-xl w-full mt-5 transition-all duration-300 ${
+                form.isValid
+                  ? "active:bg-blue-700 hover:bg-blue-600"
+                  : "cursor-not-allowed"
+              }`}
+            >
+              Login
+            </button>
+          )}
         </Formiz>
         <Divider
           style={{

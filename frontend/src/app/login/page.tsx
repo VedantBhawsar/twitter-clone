@@ -3,19 +3,31 @@ import { MyInput } from "@components/ui/MyInput";
 import { Formiz, useForm } from "@formiz/core";
 import { isEmail, isNotEmptyString } from "@formiz/validations";
 import { useAuth } from "@hooks/useAuth";
-import { useMutation } from "@tanstack/react-query";
-import { Button, Divider, Input } from "antd";
-import axios from "axios";
+import { Button, Divider } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import toast from "react-hot-toast";
+import React, { useEffect } from "react";
 import { GrGithub, GrGoogle } from "react-icons/gr";
 import { MoonLoader } from "react-spinners";
 
 const LoginPage = () => {
-  const { handleLogin } = useAuth();
+  const { handleLogin, isLoading, parseCookies, getCurrentUser } = useAuth();
   const form = useForm({ onSubmit: handleLogin });
+  const router = useRouter();
+
+  useEffect(() => {
+    async function tokenCheck() {
+      if (parseCookies()) {
+        const cookies = await getCurrentUser()
+        if (cookies.token) {
+          router.push("/home");
+          return;
+        }
+      }
+      router.push("/login");
+    }
+    tokenCheck();
+  }, []);
 
   return (
     <section className="absolute h-screen w-full bg-black z-10 flex items-center justify-center">
@@ -63,7 +75,7 @@ const LoginPage = () => {
             />
           </div>
 
-          {false ? (
+          {isLoading ? (
             <div
               className={`h-12 flex items-center justify-center bg-blue-700 cursor-not-allowed  font-bold rounded-xl w-full mt-5 transition-all duration-300`}
             >
@@ -71,7 +83,7 @@ const LoginPage = () => {
             </div>
           ) : (
             <button
-              disabled={!form.isValid}
+              disabled={!form.isValid ?? isLoading}
               type="submit"
               className={`h-12 bg-blue-500 font-bold rounded-xl w-full mt-5 transition-all duration-300 ${
                 form.isValid

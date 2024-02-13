@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   MoreOutlined,
   UsergroupAddOutlined,
@@ -11,7 +11,16 @@ import {
   HomeFilled,
   SearchOutlined,
 } from "@ant-design/icons";
-import { Avatar, MenuProps, Flex, Layout, Menu, Button, Input, Dropdown } from "antd";
+import {
+  Avatar,
+  MenuProps,
+  Flex,
+  Layout,
+  Menu,
+  Button,
+  Input,
+  Dropdown,
+} from "antd";
 import { CardItem, FollowItem } from "@components/ui/Items";
 import {
   usePathname,
@@ -21,10 +30,13 @@ import {
 import Link from "next/link";
 import { TbTrash } from "react-icons/tb";
 import { ImageModal } from "@components/Modals/imageModal";
+import { useAuth } from "@hooks/useAuth";
+import { getPossibleInstrumentationHookFilenames } from "next/dist/build/utils";
 
 export function SideBar1() {
-  const [isActive, setIsActive] = React.useState<string[]>(["1"]);
   const segment = useSelectedLayoutSegment();
+  const router = useRouter();
+  const { currentUser, validateToken } = useAuth();
 
   const links = [
     {
@@ -74,7 +86,7 @@ export function SideBar1() {
       icon: <UserOutlined className="!text-xl" />,
       label: "Profile",
       title: "profile",
-      link: "/profile/fsdfsdfsdf",
+      link: `/profile/${currentUser?._id}`,
     },
 
     {
@@ -85,24 +97,31 @@ export function SideBar1() {
     },
   ];
 
-  
   const items: MenuProps["items"] = [
     {
       key: "1",
+      onClick: () => {
+        document.cookie = "access_token= ;";
+        router.push("/login");
+      },
       label: (
-        <div
-        className="text-red-400 py-1 px-2 items-center w-44 text-md  font-bold flex gap-2"
-        onClick={()=>{
-          alert('hello')
-        }}
-        >
-         <TbTrash/>
-         <p>Logout</p>
+        <div className="text-red-400 py-1 px-2 items-center w-44 text-md  font-bold flex gap-2">
+          <TbTrash size={20} />
+          <p className="text-lg">Logout</p>
         </div>
       ),
-      className:"text-green-500"
+      className: "text-green-500",
     },
   ];
+
+  useEffect(() => {
+    async function getUser() {
+      if (!currentUser) {
+        await validateToken();
+      }
+    }
+    getUser();
+  }, []);
 
   return (
     <div className="hidden w-72 flex-1 fixed md:flex flex-col h-screen justify-between p-3 border-r-[1px] border-gray-600 ">
@@ -128,12 +147,19 @@ export function SideBar1() {
         <div className="flex gap-2 ">
           <Avatar size={50} icon={<UserOutlined />} />
           <Flex vertical>
-            <h2 className="select-none">Vedant</h2>
-            <h2 className="text-gray-500 font-normal select-none">@Vedant</h2>
+            <h2 className="select-none">{currentUser?.name}</h2>
+            <h2 className="text-gray-500 font-normal select-none">
+              @{currentUser?.username}
+            </h2>
           </Flex>
         </div>
         <div className="more z-10">
-          <Dropdown menu={{ items }} placement="bottomRight" className="" overlayClassName="!min-w-60">
+          <Dropdown
+            menu={{ items }}
+            placement="bottomRight"
+            className=""
+            overlayClassName="!min-w-60"
+          >
             <Button
               className="hover:bg-white/20 transition-all duration-300 rounded-full z-10"
               icon={<MoreOutlined className="!text-2xl text-white " />}

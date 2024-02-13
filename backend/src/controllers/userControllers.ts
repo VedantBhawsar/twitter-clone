@@ -28,7 +28,7 @@ class UserController {
 
   public validateToken = async (request: any, response: Response) => {
     try {
-      const token = request.cookies.user;
+      const token = request.cookies.access_token;
       const decoded: any = jwt.verify(token, jwtsecret);
       const user = await getUserById(decoded?.user_id ?? "");
       response.status(200).json(user);
@@ -66,7 +66,16 @@ class UserController {
         username,
       };
       const newUser = await createUser(user);
-      response.status(200).json(newUser);
+      const token = jwt.sign({ user_id: newUser?._id }, jwtsecret, {
+        expiresIn: "1h",
+      });
+      response.cookie("token", token.toString(), {
+        httpOnly: true,
+        secure: true,
+      });
+      response
+        .status(200)
+        .json({ message: "login succesful", user: newUser, jwt: token });
     } catch (error: any) {
       console.log(`[user]: ${error.message}`);
       response.status(500).json({
@@ -114,7 +123,6 @@ class UserController {
     try {
       const { username, password, email } = request.body;
       let existUser;
-      console.log(username);
       if (username) {
         existUser = await getUserbyUsername(username);
       }
@@ -131,7 +139,7 @@ class UserController {
         const token = jwt.sign({ user_id: existUser._id }, jwtsecret, {
           expiresIn: "1h",
         });
-        response.cookie("user", token.toString(), {
+        response.cookie("token", token.toString(), {
           httpOnly: true,
           secure: true,
         });
@@ -152,12 +160,33 @@ class UserController {
     }
   };
 
+  public validateEmail = async (request: Request, response: Response) => {
+    try {
+      const { email } = request.params;
+      const existUser = await getUserbyEmail(email);
+      if (existUser) {
+        response.status(200).json({
+          available: false,
+          message: "Email taken",
+        });
+      } else {
+        response.status(200).json({
+          available: true,
+          message: "Email available",
+        });
+      }
+    } catch (error: any) {
+      console.log(`[user]: ${error.message}`);
+      response.status(500).json({ error: error.message });
+    }
+  };
+
   public validUsername = async (request: Request, response: Response) => {
     try {
       const { username } = request.params;
       const existUser = await getUserbyUsername(username);
       if (existUser) {
-        response.status(404).json({
+        response.status(200).json({
           available: false,
           message: "username taken",
         });

@@ -57,6 +57,9 @@ const User = mongoose.model(
         required: false,
       },
     },
+    description: {
+      type: String,
+    },
     dob: {
       type: Date,
       required: false,
@@ -88,8 +91,7 @@ export const getUserbyUsername = async (userUsername: string) =>
 export const getUserbyEmail = async (email: string) =>
   await User.findOne({ email: email });
 
-export const createUser = async (user: IUser): Promise<IUser> =>
-  await new User(user).save();
+export const createUser = async (user: IUser) => await new User(user).save();
 
 export const updateUserById = async (updateUser: any, id: string) =>
   await User.findByIdAndUpdate(id, {
@@ -116,8 +118,9 @@ export const followingUser = async (id: string, userId: string) =>
     },
   });
 
-export const unfollowUser = async (id: string, userId: string) => await User.findByIdAndUpdate(id, {
-  $pull: {
-    followings: userId,
-  },
-})
+export const unfollowUser = async (id: string, userId: string) =>
+  await User.findByIdAndUpdate(id, {
+    $pull: {
+      followings: userId,
+    },
+  });
