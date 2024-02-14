@@ -1,28 +1,22 @@
 "use client";
-import { Button, Space, Modal } from "antd";
+import { Modal } from "antd";
 import Image from "next/image";
-import React, { useState } from "react";
-import { BsExclamationCircleFill } from "react-icons/bs";
+import React from "react";
+import { FaRotateLeft } from "react-icons/fa6";
 
 export const ImageModal = ({
   isModalOpen,
   setIsModalOpen,
-  imageUrl
+  imageUrl,
+  setImageUrl,
 }: {
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  imageUrl:string
+  imageUrl: string;
+  setImageUrl: any;
 }) => {
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
   const handleCancel = () => {
+    setImageUrl("");
     setIsModalOpen(false);
   };
   return (
@@ -30,20 +24,17 @@ export const ImageModal = ({
       <Modal
         title=""
         open={isModalOpen}
-        // onOk={handleOk}
         onCancel={handleCancel}
-        footer={[]}
         centered={true}
-className="min-w-[70%] min-h-[70%]"
+        className="min-w-[35%]"
       >
         <Image
-          src={
-            "https://pbs.twimg.com/media/GEWlwP4XEAEmhW8?format=png&name=small"
-          }
-          width={50}
-          height={50}
-          className={'w-full h-full'}
+          src={imageUrl}
+          width={1080}
+          height={1920}
+          className={`w-full h-full rounded-md`}
           alt="post image"
+          loading="eager"
         />
       </Modal>
     </>

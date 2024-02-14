@@ -10,7 +10,8 @@ import {
 class TweetController {
   public getTweets = async (request: Request, response: Response) => {
     try {
-      const tweets = await getAllTweet();
+      let tweets = await getAllTweet();
+      tweets = tweets.reverse();
       response.status(200).json(tweets);
     } catch (error: any) {
       console.log(`[tweet]: ${error.message}`);

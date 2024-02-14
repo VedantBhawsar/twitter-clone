@@ -1,7 +1,7 @@
 "use client";
 import { Avatar, Button, MenuProps } from "antd";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MoreOutlined,
   WechatOutlined,
@@ -20,13 +20,29 @@ import { TbTrash } from "react-icons/tb";
 import { ImageModal } from "@components/Modals/imageModal";
 import { BiUserPlus } from "react-icons/bi";
 import { HiDocumentPlus } from "react-icons/hi2";
+import { useAuth } from "@hooks/useAuth";
 
-export const Post = ({ user }: any) => {
+export const Post = ({ post }: any) => {
   const router = useRouter();
+  const [user, setUser] = useState<{
+    _id: string;
+    name: string;
+    surname: string;
+    email: string;
+    username: string;
+    password: string;
+    followers: string[];
+    followings: string[];
+    createdAt: string;
+    images: {
+      profileImage: string;
+    };
+  }>();
   const url =
     "https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+  const { fetchUser, currentUser } = useAuth();
 
   const reactions = [
     {
@@ -64,7 +80,9 @@ export const Post = ({ user }: any) => {
       key: "1",
       label: (
         <div
-          className="text-red-400 py-1 px-2 items-center w-44 text-md  font-bold flex gap-2"
+          className={`${
+            currentUser?._id === post?.author_id ? "flex" : "hidden"
+          }   text-red-400 py-1 px-2 items-center w-44 text-md  font-bold flex gap-2`}
           onClick={() => {
             alert("hello");
           }}
@@ -84,7 +102,7 @@ export const Post = ({ user }: any) => {
           }}
         >
           <BiUserPlus />
-          <p>Follow @Vedant</p>
+          <p>Follow @{user?.username}</p>
         </div>
       ),
     },
@@ -98,18 +116,28 @@ export const Post = ({ user }: any) => {
           }}
         >
           <HiDocumentPlus />
-          <p>Add/remove @Vedant</p>
+          <p>Add/remove @{user?.username}</p>
         </div>
       ),
     },
   ];
+
+  const date = new Date(post?.createdAt);
+
+  useEffect(() => {
+    async function getUser() {
+      const data = await fetchUser(post?.author_id);
+      setUser(data);
+    }
+    getUser();
+  }, []);
 
   return (
     <div className="flex w-full items-start gap-8 md:gap-5 p-5 border-b-[1px] border-gray-600">
       <div className="avtar hidden md:flex">
         <Link href={`/profile/${user?._id}`}>
           <Image
-            src={user?.images?.profileImage}
+            src={user?.images?.profileImage ?? ""}
             width={70}
             height={70}
             alt="profile pic"
@@ -118,16 +146,16 @@ export const Post = ({ user }: any) => {
         </Link>
       </div>
       <div className="content flex flex-col w-full gap-5">
-        <div className="flex gap-3">
-          <div className="flex flex-col gap-2 items-start cursor-pointer">
+        <div className="flex gap-3 w-full">
+          <div className="w-full flex flex-col gap-2 items-start cursor-pointer">
             <div className="flex gap-2 items-center">
               <div className="avtar flex md:hidden ">
                 <Image
-                  src={user?.images?.profileImage}
+                  src={user?.images?.profileImage ?? ""}
                   width={40}
                   height={40}
                   alt="profile pic"
-                  className="hover:bg-gray-500/30 p-0 transition-all duration-75 cursor-pointer active:bg-gray-500/50 object-cover"
+                  className="hover:bg-gray-500/30 p-0 rounded-full transition-all duration-75 cursor-pointer active:bg-gray-500/50 object-cover"
                 />
               </div>
               <Link
@@ -139,16 +167,10 @@ export const Post = ({ user }: any) => {
               <h2 className="text-md md:text-xl text-gray-400/50">
                 @{user?.username}
               </h2>
-              <div className="text-md md:text-xl text-gray-400/50">6h</div>
+              <div className="text-md md:text-xl text-gray-400/50">{`${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`}</div>
             </div>
-            <p className="text-md">
-              We, from Bangalore, are looking for Professionals, who have done
-              Internship for minimum 4 months to 6 months, at Product
-              Development firms in MERN Stack Android Native Flutter Deep
-              Learning, Computer Vision, NLP, PyTorch We have 6 months Project
-              Work
-            </p>
-            <Link href={"/post/{id}"}>
+            <p className="text-md">{post?.message}</p>
+            <Link href={`/post/${post?._id}`}>
               <Button
                 type="link"
                 className="p-0"
@@ -159,59 +181,28 @@ export const Post = ({ user }: any) => {
                 Show more
               </Button>
             </Link>
-            <div
-              className="relative flex w-full rounded-xl  overflow-hidden p-3 bg-gray-400/20 shadow-lg"
-              onClick={() => {
-                setImageUrl(
-                  "https://pbs.twimg.com/media/GEWlwP4XEAEmhW8?format=png&name=small"
-                );
-                setIsModalOpen(true);
-              }}
-            >
-              <Image
-                src={
-                  "https://pbs.twimg.com/media/GEWlwP4XEAEmhW8?format=png&name=small"
-                }
-                alt="post img"
-                width={50}
-                height={50}
-                className="w-full rounded-xl border-2 object-cover shadow-lg hover:cursor-pointer"
-              />
-            </div>
-
-            <div className="relative flex w-full rounded-xl  overflow-hidden p-3 bg-gray-400/20 shadow-lg gap-3">
-              <Image
-                src={
-                  "https://pbs.twimg.com/media/GEWlwP4XEAEmhW8?format=png&name=small"
-                }
-                alt="post img"
-                width={50}
-                height={50}
-                className="w-1/2 rounded-xl border-2 hover:cursor-pointer shadow-lg"
-                onClick={() => {
-                  setImageUrl(
-                    "https://pbs.twimg.com/media/GEWlwP4XEAEmhW8?format=png&name=small"
-                  );
-                  setIsModalOpen(true);
-                }}
-              />
-
-              <Image
-                src={
-                  "https://pbs.twimg.com/media/GEWlwP4XEAEmhW8?format=png&name=small"
-                }
-                alt="post img"
-                width={50}
-                height={50}
-                className="w-1/2 rounded-xl border-2 shadow-lg hover:cursor-pointer"
-                onClick={() => {
-                  setImageUrl(
-                    "https://pbs.twimg.com/media/GEWlwP4XEAEmhW8?format=png&name=small"
-                  );
-                  setIsModalOpen(true);
-                }}
-              />
-            </div>
+            {post?.images && (
+              <div className="flex flex-col md:flex-row w-full gap-2">
+                {post?.images.map((image: string, index: number) => (
+                  <div
+                    key={index}
+                    className="flex-1  relative flex w-full rounded-xl  overflow-hidden p-1 bg-gray-400/20 shadow-lg"
+                    onClick={() => {
+                      setImageUrl(image);
+                      setIsModalOpen(true);
+                    }}
+                  >
+                    <Image
+                      src={image}
+                      alt="post img"
+                      width={1090}
+                      height={1920}
+                      className="w-full rounded-xl object-cover shadow-lg hover:cursor-pointer"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="more">
@@ -267,6 +258,7 @@ export const Post = ({ user }: any) => {
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         imageUrl={imageUrl}
+        setImageUrl={setImageUrl}
       />
     </div>
   );

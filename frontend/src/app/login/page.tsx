@@ -19,7 +19,7 @@ const LoginPage = () => {
     async function tokenCheck() {
       if (parseCookies()) {
         const cookies = await getCurrentUser()
-        if (cookies.token) {
+        if (cookies?.token) {
           router.push("/home");
           return;
         }

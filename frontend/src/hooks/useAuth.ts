@@ -31,6 +31,9 @@ export function useAuth() {
     followers: string[];
     followings: string[];
     createdAt: string;
+    images: {
+      profileImage: string;
+    };
   }>();
 
   function parseCookies() {

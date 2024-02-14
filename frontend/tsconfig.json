@@ -40,6 +40,6 @@
     ".next/types/**/*.ts",
     "**/**/**/*.tsx",
     "**/**/*.ts"
-  ],
+, "src/components/ui/uploadModals/uploadModal.tss"  ],
   "exclude": ["node_modules"]
 }
