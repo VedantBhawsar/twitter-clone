@@ -21,8 +21,9 @@ class TweetController {
 
   public getTweet = async (request: Request, response: Response) => {
     try {
+      console.log(request.params.id);
       const tweet = await getTweetById(request.params.id);
-      if (tweet) {
+      if (!tweet) {
         response.status(404).json({
           message: "Tweet not found",
         });

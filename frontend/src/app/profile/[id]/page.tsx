@@ -1,5 +1,6 @@
 "use client";
 import { usePostStore } from "@/stores/postStore";
+import { useUseStore } from "@/stores/useStore";
 import { Post } from "@components/HomeComponents/Posts";
 import { ProfileMain } from "@components/ProfileComponents/ProfileMain";
 import { ProfileNavbar } from "@components/ProfileComponents/ProfileNavbar";
@@ -9,8 +10,8 @@ import { useParams, usePathname } from "next/navigation";
 import React, { useEffect } from "react";
 
 const ProfilePage = () => {
-  const { user, currentUser, fetchUser, validateToken, getCurrentUser } =
-    useAuth();
+  const { user, fetchUser } = useAuth();
+  const currentUser: any = useUseStore((state) => state.user);
   const { fetchPosts } = usePost();
   const posts = usePostStore((state: any) => state?.posts);
   const {
@@ -21,8 +22,9 @@ const ProfilePage = () => {
 
   useEffect(() => {
     async function getUser() {
-      await fetchUser(id);
-      await getCurrentUser();
+      if (currentUser?._id !== id) {
+        await fetchUser(id);
+      }
       await fetchPosts();
     }
     getUser();
@@ -32,13 +34,13 @@ const ProfilePage = () => {
     <main className="md:ml-72 flex-col flex-[2] flex w-full md:w-16  min-h-screen border-r-[1px] max-h-screen border-gray-600 overflow-y-scroll">
       <ProfileNavbar
         user={user}
-        currentUser={currentUser}
         postcount={
-          posts?.filter((post: any) => post.author_id === currentUser?._id)
-            .length
+          posts?.filter(
+            (post: any) => post.author_id === (currentUser?._id ?? user?._id)
+          ).length
         }
       />
-      <ProfileMain user={user} currentUser={currentUser} />
+      <ProfileMain user={user} />
       <div className="flex flex-col max-h-[25%] gap-0">
         {posts
           ?.filter((post: any) => post.author_id === currentUser?._id)

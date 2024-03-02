@@ -6,6 +6,7 @@ export function usePost() {
   const posts = usePostStore((state: any) => state?.posts);
   const addPost = usePostStore((state: any) => state?.addPost);
   const setPosts = usePostStore((state: any) => state.setPosts);
+
   async function fetchPosts() {
     try {
       const { data } = await axios.get("/api/tweet/", {
@@ -14,6 +15,26 @@ export function usePost() {
       setPosts(data);
     } catch (error: any) {
       toast.error("Error while fetching posts", {
+        position: "bottom-center",
+        style: {
+          borderRadius: "20px",
+          background: "#444",
+          opacity: 0.1,
+          color: "#fff",
+        },
+      });
+    }
+  }
+
+  async function fetchPost(id: string) {
+    try {
+      const { data } = await axios.get(`/api/tweet/${id}`, {
+        withCredentials: true,
+      });
+      console.log(data);
+      return data;
+    } catch (error: any) {
+      toast.error("Error while fetching post", {
         position: "bottom-center",
         style: {
           borderRadius: "20px",
@@ -60,5 +81,6 @@ export function usePost() {
   return {
     createPost,
     fetchPosts,
+    fetchPost,
   };
 }

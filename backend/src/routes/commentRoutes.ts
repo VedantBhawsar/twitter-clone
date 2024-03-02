@@ -4,7 +4,7 @@ import CommentsController from "../controllers/commentControllers";
 
 const router = Router();
 
-router.post("/give", verifyToken, CommentsController.createComment);
+router.post("/create", verifyToken, CommentsController.createComment);
 router.delete("/delete/:id", verifyToken, CommentsController.deleteComment);
 router.get("/:id", verifyToken, CommentsController.getComments);
 router.put("/update/:id", verifyToken, CommentsController.updateComment);

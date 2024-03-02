@@ -32,12 +32,13 @@ import { TbTrash } from "react-icons/tb";
 import { ImageModal } from "@components/Modals/imageModal";
 import { useAuth } from "@hooks/useAuth";
 import { getPossibleInstrumentationHookFilenames } from "next/dist/build/utils";
+import { useUseStore } from "@/stores/useStore";
 
 export function SideBar1() {
   const segment = useSelectedLayoutSegment();
   const router = useRouter();
-  const { currentUser, validateToken } = useAuth();
-
+  const { validateToken } = useAuth();
+  const currentUser: any = useUseStore((state) => state.user);
   const links = [
     {
       icon: <HomeFilled className="!text-xl" />,
@@ -113,15 +114,6 @@ export function SideBar1() {
       className: "text-green-500",
     },
   ];
-
-  useEffect(() => {
-    async function getUser() {
-      if (!currentUser) {
-        await validateToken();
-      }
-    }
-    getUser();
-  }, []);
 
   return (
     <div className="hidden w-72 flex-1 fixed md:flex flex-col h-screen justify-between p-3 border-r-[1px] border-gray-600 ">

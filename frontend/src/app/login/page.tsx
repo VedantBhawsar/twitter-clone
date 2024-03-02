@@ -1,4 +1,5 @@
 "use client";
+import { useUseStore } from "@/stores/useStore";
 import { MyInput } from "@components/ui/MyInput";
 import { Formiz, useForm } from "@formiz/core";
 import { isEmail, isNotEmptyString } from "@formiz/validations";
@@ -11,15 +12,16 @@ import { GrGithub, GrGoogle } from "react-icons/gr";
 import { MoonLoader } from "react-spinners";
 
 const LoginPage = () => {
-  const { handleLogin, isLoading, parseCookies, getCurrentUser } = useAuth();
+  const { handleLogin, isLoading, parseCookies, validateToken } = useAuth();
   const form = useForm({ onSubmit: handleLogin });
   const router = useRouter();
+  const currentUser:any = useUseStore((state) => state.user);
 
   useEffect(() => {
     async function tokenCheck() {
-      if (parseCookies()) {
-        const cookies = await getCurrentUser()
-        if (cookies?.token) {
+      if (currentUser?._id) {
+        const isValidToken = await validateToken();
+        if (isValidToken) {
           router.push("/home");
           return;
         }
@@ -28,6 +30,8 @@ const LoginPage = () => {
     }
     tokenCheck();
   }, []);
+
+  console.log("Error: ");
 
   return (
     <section className="absolute h-screen w-full bg-black z-10 flex items-center justify-center">

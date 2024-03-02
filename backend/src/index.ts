@@ -3,10 +3,12 @@ import { app } from "./app";
 import { userRoutes } from "./routes/userRoutes";
 import { tweetRoutes } from "./routes/tweetRoutes";
 import { likesRoutes } from "./routes/LikeRoutes";
+import { commentRoutes } from "./routes/commentRoutes";
 
 app.use("/user", userRoutes);
 app.use("/tweet", tweetRoutes);
 app.use("/like", likesRoutes);
+app.use("/comment", commentRoutes);
 
 app.get("/", (req: Request, res: any) => {
   res.status(200).json("Server is running successfully!");

@@ -21,6 +21,7 @@ import { ImageModal } from "@components/Modals/imageModal";
 import { BiUserPlus } from "react-icons/bi";
 import { HiDocumentPlus } from "react-icons/hi2";
 import { useAuth } from "@hooks/useAuth";
+import { useUseStore } from "@/stores/useStore";
 
 export const Post = ({ post }: any) => {
   const router = useRouter();
@@ -38,11 +39,10 @@ export const Post = ({ post }: any) => {
       profileImage: string;
     };
   }>();
-  const url =
-    "https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
-  const { fetchUser, currentUser } = useAuth();
+  const { fetchUser } = useAuth();
+  const currentUser: any = useUseStore((state) => state.user);
 
   const reactions = [
     {
@@ -129,15 +129,20 @@ export const Post = ({ post }: any) => {
       const data = await fetchUser(post?.author_id);
       setUser(data);
     }
-    getUser();
+    if (!post._id && currentUser?._id !== post?.author_id) {
+      console.error("sdhfsldkjf");
+      getUser();
+    }
   }, []);
 
   return (
     <div className="flex w-full items-start gap-8 md:gap-5 p-5 border-b-[1px] border-gray-600">
       <div className="avtar hidden md:flex">
-        <Link href={`/profile/${user?._id}`}>
+        <Link href={`/profile/${currentUser?._id ?? user?._id}`}>
           <Image
-            src={user?.images?.profileImage ?? ""}
+            src={
+              user?.images?.profileImage ?? currentUser?.images?.profileImage
+            }
             width={70}
             height={70}
             alt="profile pic"
@@ -151,7 +156,10 @@ export const Post = ({ post }: any) => {
             <div className="flex gap-2 items-center">
               <div className="avtar flex md:hidden ">
                 <Image
-                  src={user?.images?.profileImage ?? ""}
+                  src={
+                    currentUser?.images?.profileImage ??
+                    user?.images?.profileImage
+                  }
                   width={40}
                   height={40}
                   alt="profile pic"
@@ -159,10 +167,10 @@ export const Post = ({ post }: any) => {
                 />
               </div>
               <Link
-                href={`/profile/${user?._id}`}
+                href={`/profile/${currentUser?._id ?? user?._id}`}
                 className="text-xl hover:underline underline-offset-2"
               >
-                {user?.name}
+                {currentUser?.name ?? user?.name}
               </Link>
               <h2 className="text-md md:text-xl text-gray-400/50">
                 @{user?.username}

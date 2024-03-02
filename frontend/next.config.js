@@ -5,10 +5,11 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://twitter-backend-tc5l.onrender.com/:path*",
+        destination: "http://localhost:3001/:path*",
       },
     ];
   },
+
   images: {
     remotePatterns: [
       {

@@ -1,16 +1,23 @@
 "use client";
+import { useUseStore } from "@/stores/useStore";
 import { useAuth } from "@hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { InfinitySpin } from "react-loader-spinner";
 
 export default function Home() {
-  const { parseCookies, getCurrentUser } = useAuth();
+  const { parseCookies, validateToken } = useAuth();
+  const currentUser: any = useUseStore((state) => state.user);
   const router = useRouter();
   useEffect(() => {
     async function tokenCheck() {
-      if (parseCookies()) {
-        if (await getCurrentUser()) {
+      const cookie = parseCookies();
+      if (cookie?.token) {
+        if (currentUser?._id) {
+          router.push("/home");
+          return;
+        } else {
+          await validateToken();
           router.push("/home");
           return;
         }

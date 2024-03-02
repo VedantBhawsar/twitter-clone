@@ -8,11 +8,14 @@ import { useAuth } from "@hooks/useAuth";
 import { usePost } from "@hooks/usePost";
 import { usePostStore } from "@/stores/postStore";
 import { TailSpin } from "react-loader-spinner";
+import { useUseStore } from "@/stores/useStore";
+import { useRouter } from "next/navigation";
 
 const HomePage = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const { currentUser, validateToken, getCurrentUser } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const { validateToken, parseCookies } = useAuth();
   const { fetchPosts } = usePost();
   const posts = usePostStore((state: any) => state?.posts);
   const addPost = usePostStore((state: any) => state?.addPost);
@@ -27,19 +30,25 @@ const HomePage = () => {
       label: "Following",
     },
   ];
-
+  const currentUser = useUseStore((state: any) => state.user);
   useEffect(() => {
-    async function getUser() {
-      setLoading(true);
-      if (!currentUser) {
-        await validateToken();
-        await getCurrentUser();
+    async function fetchposts() {
+      if (currentUser._id) {
+        await fetchPosts();
+        setLoading(false);
+        return;
+      } else {
+        const cookie = parseCookies();
+        if (cookie?.token) {
+          await validateToken();
+          return;
+        }
+        router.push("/login");
+        return;
       }
-      await fetchPosts();
-      setLoading(false);
     }
-    getUser();
-  }, []);
+    fetchposts();
+  }, [currentUser?._id]);
 
   return (
     <main className="md:ml-72 flex-col flex-[2] flex w-full md:w-16  min-h-screen border-r-[1px] max-h-screen border-gray-600">
@@ -63,7 +72,7 @@ const HomePage = () => {
           posts
             ?.reverse()
             .map((post: any) => (
-              <Post user={currentUser} post={post} key={post?._id} />
+              <Post currentUser={currentUser} post={post} key={post?._id} />
             ))
         )}
       </div>

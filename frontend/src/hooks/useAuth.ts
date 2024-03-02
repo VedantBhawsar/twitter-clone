@@ -1,3 +1,4 @@
+import { useUseStore } from "@/stores/useStore";
 import axios from "axios";
 
 import { useRouter } from "next/navigation";
@@ -9,17 +10,20 @@ export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [currentUser, setCurrentUser] = useState<{
-    _id: string;
-    name: string;
-    surname: string;
-    email: string;
-    username: string;
-    password: string;
-    followers: string[];
-    followings: string[];
-    createdAt: string;
-  }>();
+  // const [currentUser, setCurrentUser] = useState<{
+  //   _id: string;
+  //   name: string;
+  //   surname: string;
+  //   email: string;
+  //   username: string;
+  //   password: string;
+  //   followers: string[];
+  //   followings: string[];
+  //   createdAt: string;
+  // }>();
+
+  const currentUser = useUseStore((state) => state.user);
+  const setCurrentUser = useUseStore((state) => state.setUser);
 
   const [user, setUser] = useState<{
     _id: string;
@@ -58,9 +62,7 @@ export function useAuth() {
       const { data } = await axios.get("/api/user/validatetoken", {
         withCredentials: true,
       });
-      setIsAuthenticated(true);
       setCurrentUser(data);
-      console.log("User is authenticated");
       return { ...data } ?? undefined;
     } catch (error: any) {
       document.cookie = "";
@@ -101,7 +103,7 @@ export function useAuth() {
   async function fetchUser(id: string) {
     try {
       const { data } = await axios.get("/api/user/" + id);
-      setUser(data);
+      setCurrentUser(data);
       return { ...data };
     } catch (error: any) {
       toast.error(error.response.data.message, {
@@ -116,24 +118,10 @@ export function useAuth() {
     }
   }
 
-  async function getCurrentUser() {
-    const cookies = parseCookies();
-    try {
-      const { data } = await axios.get("/api/user/" + cookies?.id);
-      setCurrentUser(data);
-      console.log("User is authenticated");
-      return { ...data } ?? undefined;
-    } catch (error: any) {
-      console.log(error);
-      return undefined;
-    }
-  }
-
   async function handleLogin(value: { email: string; password: string }) {
     setIsLoading((prev) => true);
     try {
       const { data } = await axios.post("/api/user/login", value);
-      setCurrentUser(data.user);
       document.cookie = `id=${data.user._id};`;
       document.cookie = `access_token=${data.jwt};`;
 
@@ -146,6 +134,8 @@ export function useAuth() {
           color: "#fff",
         },
       });
+
+      setCurrentUser(data.user);
       router.push("/");
     } catch (error: any) {
       toast.error(error.response.data.message, {
@@ -174,7 +164,6 @@ export function useAuth() {
       const { data } = await axios.post("/api/user/register", value);
       document.cookie = `id=${data.user._id};`;
       document.cookie = `access_token=${data.jwt};`;
-      setCurrentUser(data.user);
       router.push("/login");
     } catch (error: any) {
       toast.error(error.response.data.message, {
@@ -193,7 +182,6 @@ export function useAuth() {
     isLoading,
     error,
     isAuthenticated,
-    currentUser,
     fetchUser,
     validateUsername,
     parseCookies,
@@ -202,6 +190,5 @@ export function useAuth() {
     validateToken,
     handleRegister,
     validateEmail,
-    getCurrentUser,
   };
 }

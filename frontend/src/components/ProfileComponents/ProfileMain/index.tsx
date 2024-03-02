@@ -1,10 +1,13 @@
 "use client";
+import { useUseStore } from "@/stores/useStore";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { BiPaint } from "react-icons/bi";
 
-export const ProfileMain = ({ user, currentUser }: any) => {
+export const ProfileMain = ({ user }: any) => {
   const [selected, setSelected] = useState(0);
+  const currentUser: any = useUseStore((state) => state.user);
   const subSections: string[] = [
     "Posts",
     "Replies",
@@ -12,17 +15,22 @@ export const ProfileMain = ({ user, currentUser }: any) => {
     "Media",
     "Likes",
   ];
+  const {
+    id,
+  }: {
+    id: string;
+  } = useParams();
 
   return (
     <section className="relative flex h-screen flex-col overflow-y-scroll">
       <div className="relative w-full min-h-52 ">
         <Image
-          src={user?.images?.coverImage}
+          src={user?.images?.coverImage ?? currentUser?.images?.coverImage}
           alt="Picture of the author"
           fill
           className="object-cover p-1 -z-10"
         />
-        {user?._id === currentUser?._id && (
+        {id === currentUser?._id && (
           <button className="absolute bottom-5 right-5  bg-black/30 hover:bg-black/40 active:bg-black/50 flex text-gray-300 px-4 p-2 items-center gap-1 font-bold rounded-md">
             <BiPaint size={18} />
             <p>Edit</p>
@@ -33,38 +41,59 @@ export const ProfileMain = ({ user, currentUser }: any) => {
         <div className="flex items-center justify-between ">
           <div className="relative h-56 w-56 -mt-24 rounded-full cursor-pointer ">
             <Image
-              src={user?.images?.profileImage}
+              src={
+                user?.images?.profileImage ?? currentUser?.images.profileImage
+              }
               fill
               alt="Picture of the author"
               className="aspect-square object-cover rounded-full p-1 bg-black "
             />
           </div>
-          <button
-            // type="primary"
-            className="text-lg border-2 border-gray-400 rounded-full px-5 py-2 hover:bg-white/20 active:bg-white/30 transition-all duration-300 font-bold"
-          >
-            Edit profile
-          </button>
+          {id === currentUser._id ? (
+            <button
+              // type="primary"
+              className="text-lg border-2 border-gray-400 rounded-full px-5 py-2 hover:bg-white/20 active:bg-white/30 transition-all duration-300 font-bold"
+            >
+              Edit profile
+            </button>
+          ) : (
+            <button
+              // type="primary"
+              className="text-lg border-2 bg-white hover:text-white text-black rounded-full px-5 py-2 hover:bg-white/20 active:bg-white/30 transition-all duration-300 font-bold"
+            >
+              Follow
+            </button>
+          )}
         </div>
 
         <div className="">
-          <h1 className="text-3xl font-bold text-white-900">{user?.name}</h1>
-          <p className="text-md  text-gray-300">@{user?.username}</p>
+          <h1 className="text-3xl font-bold text-white-900">
+            {user?.name ?? currentUser.name}
+          </h1>
+          <p className="text-md  text-gray-300">
+            @{user?.username ?? currentUser.username}
+          </p>
         </div>
 
         <div className="flex">
-          <p className="text-lg">{user?.description}</p>
+          <p className="text-lg">
+            {user?.description ?? currentUser?.description}
+          </p>
         </div>
 
         <div className="flex gap-3 text-xl">
           <button className="flex gap-2 items-center cursor-pointer">
-            <span className="font-bold">{user?.followers.length}</span>
+            <span className="font-bold">
+              {user?.followers.length ?? currentUser?.followers.length}
+            </span>
             <p className="text-gray-400 hover:text-gray-500 active:text-gray-600 transition-all duration-300 ">
               Followers
             </p>
           </button>
           <button className="flex gap-2 items-center cursor-pointer">
-            <span className="font-bold">{user?.followers.length}</span>
+            <span className="font-bold">
+              {user?.followings.length ?? currentUser?.followings.length}
+            </span>
             <p className="text-gray-400">Following</p>
           </button>
         </div>
