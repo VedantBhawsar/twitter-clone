@@ -18,6 +18,7 @@ import { Tweet } from '@/gql/graphql';
 import TextareaAutosize from 'react-textarea-autosize';
 import { useUploadImage } from '@/hooks/image';
 import Link from 'next/link';
+import Head from 'next/head';
 
 export default function Home() {
   const { user } = useCurrentUser();
@@ -55,6 +56,9 @@ export default function Home() {
 
   return (
     <>
+     <Head>
+        <title>Tweet | Home</title>
+      </Head>
       <div className='border-2 border-gray-900  flex w-full p-5 filter backdrop-blur bg-slate-700/10'>
         <h2 className='text-white font-semibold tracking-wider text-lg '>
           Home

@@ -232,23 +232,23 @@ function ProfilePage() {
         </TabsList>
         <TabsContent value="tweets">
           {user?.tweets &&
-            user?.tweets.map((tweet: any, index) => {
+            user?.tweets.map((tweet: any, index:any) => {
               const data: Tweet = {
                 ...tweet,
                 author: user,
               };
-              return <FeedCard data={data} />;
+              return <FeedCard key={index} data={data} />;
             })}
         </TabsContent>
         <TabsContent value="comments">
           {user?.comments &&
-            user?.comments.map((comments: any, index) => {
+            user?.comments.map((comments: any, index:number) => {
               const comment = {
                 ...comments,
                 author: user,
               };
               return (
-                <div className="border border-gray-900 p-5 hover:bg-white/5 cursor-pointer">
+                <div key={index} className="border border-gray-900 p-5 hover:bg-white/5 cursor-pointer">
                   <div className="grid grid-cols-12">
                     <div
                       className="

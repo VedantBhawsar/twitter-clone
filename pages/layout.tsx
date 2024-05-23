@@ -182,7 +182,7 @@ export default function RootLayout({
                     <DialogTitle>Create Tweet</DialogTitle>
                     <DialogDescription className="text-gray-300">
                       Share your thoughts with your friends and family. Click
-                      save when you're done. (
+                      save when you&apos;re done. (
                       <span className="text-red-400">
                         use feed input to upload image
                       </span>
