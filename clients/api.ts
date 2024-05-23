@@ -2,8 +2,11 @@ import { GraphQLClient } from 'graphql-request';
 
 const isClient = typeof window !== 'undefined';
 
+console.log(process.env.NEXT_PUBLIC_API_URL)
+
+
 export const graphqlClient = new GraphQLClient(
-  'http://localhost:8000/graphql',
+  process.env.NEXT_PUBLIC_API_URL as string,
   {
     headers: () => ({
       Authorization: isClient

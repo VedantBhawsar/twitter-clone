@@ -99,9 +99,9 @@ const TweetIdPage = () => {
       </div>
       <div>
         {tweet.comments &&
-          tweet?.comments.map((comment) => {
+          tweet?.comments.map((comment, index:number) => {
             return (
-              <div className='border border-gray-900 p-5 hover:bg-white/5 cursor-pointer'>
+              <div key={index} className='border border-gray-900 p-5 hover:bg-white/5 cursor-pointer'>
                 <div className='grid grid-cols-12'>
                   <div
                     className='
